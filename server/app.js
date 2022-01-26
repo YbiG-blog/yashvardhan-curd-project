@@ -5,6 +5,7 @@ const mongoose = require("mongoose");
 const bcrypt = require("bcrypt");
 const saltRounds = 10;
 const jwt = require('jsonwebtoken');
+const cookieParser = require('cookie-parser')
 require("./datacon/datacon");
 //export modelRout
 // const userRoute = require("./modelRoutes/User");
@@ -13,7 +14,7 @@ const app = express();
 
 
 //Middlewares
-
+app.use(cookieParser);
 app.use(express.json());
 // app.use("/api/users", userRoute);
 
@@ -61,9 +62,16 @@ if(password===confirmpassword){
   phone: req.body.phone,
   confirmpassword:confirmpassword
     });
-    console.log(newUser);
+    // console.log(newUser);
     const token = await newUser.generateAuthToken();
   console.log("token is here -> "+token)
+
+  //add cookie
+  res.cookie("jwt", token,{
+    expires:new Date(Date.now()+8000),
+    httpOnly:true
+  });
+  console.log(req.cookies.jwt);
     const creatUser = await newUser.save();
     res.status(201).send(creatUser);
   }
@@ -92,6 +100,12 @@ if(!useremail){
 const matchPassword = await bcrypt.compare(password,useremail.password);
 const token = await useremail.generateAuthToken();
   console.log("token is here -> "+token)
+ //add cookie
+ res.cookie("jwt", token,{
+  expires:new Date(Date.now()+80000),
+  httpOnly:true
+});
+  
 if(matchPassword){ return  res.status(201).send("login successfully");
 }
 else{
