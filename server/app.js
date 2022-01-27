@@ -5,16 +5,18 @@ const mongoose = require("mongoose");
 const bcrypt = require("bcrypt");
 const saltRounds = 10;
 const jwt = require('jsonwebtoken');
-// const cookieParser = require('cookie-parser')
+const cookieParser = require('cookie-parser')
 require("./datacon/datacon");
 const User = require("./modelUser/User");
+const auth = require("./authUser/auth");
+
+
 const app = express();
 
 
 //Middlewares
-// app.use(cookieParser);
 app.use(express.json());
-// app.use("/api/users", userRoute);
+app.use(cookieParser());
 
 /// find all user Data
 app.get("/register", async(req, res)=>{
@@ -47,6 +49,11 @@ else
     const tittlename= req.params.userId;
   })
 
+/// for auth
+app.get("/home",auth,(req,res)=>{
+  res.send("this is home page")
+})
+
 app.post("/register", async(req, res) => {
     try{
 const password = req.body.password;
@@ -65,11 +72,10 @@ if(password===confirmpassword){
   console.log("token is here -> "+token)
 
   //add cookie
-  // res.cookie("jwt", token,{
-  //   expires:new Date(Date.now()+8000),
-  //   httpOnly:true
-  // });
-  
+  res.cookie("jwt", token,{
+    expires:new Date(Date.now()+80000),
+    httpOnly:true
+  });
     const creatUser = await newUser.save();
     res.status(201).send(creatUser);
   }
@@ -99,11 +105,11 @@ const matchPassword = await bcrypt.compare(password,useremail.password);
 const token = await useremail.generateAuthToken();
   console.log("token is here -> "+token)
  //add cookie
-//  res.cookie("jwt", token,{
-//   expires:new Date(Date.now()+80000),
-//   httpOnly:true
-// });
-  
+ res.cookie("jwt", token,{
+  expires:new Date(Date.now()+80000),
+  httpOnly:true
+});
+
 if(matchPassword){ return  res.status(201).send("login successfully");
 }
 else{
