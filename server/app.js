@@ -5,16 +5,14 @@ const mongoose = require("mongoose");
 const bcrypt = require("bcrypt");
 const saltRounds = 10;
 const jwt = require('jsonwebtoken');
-const cookieParser = require('cookie-parser')
+// const cookieParser = require('cookie-parser')
 require("./datacon/datacon");
-//export modelRout
-// const userRoute = require("./modelRoutes/User");
 const User = require("./modelUser/User");
 const app = express();
 
 
 //Middlewares
-app.use(cookieParser);
+// app.use(cookieParser);
 app.use(express.json());
 // app.use("/api/users", userRoute);
 
@@ -67,11 +65,11 @@ if(password===confirmpassword){
   console.log("token is here -> "+token)
 
   //add cookie
-  res.cookie("jwt", token,{
-    expires:new Date(Date.now()+8000),
-    httpOnly:true
-  });
-  console.log(req.cookies.jwt);
+  // res.cookie("jwt", token,{
+  //   expires:new Date(Date.now()+8000),
+  //   httpOnly:true
+  // });
+  
     const creatUser = await newUser.save();
     res.status(201).send(creatUser);
   }
@@ -101,10 +99,10 @@ const matchPassword = await bcrypt.compare(password,useremail.password);
 const token = await useremail.generateAuthToken();
   console.log("token is here -> "+token)
  //add cookie
- res.cookie("jwt", token,{
-  expires:new Date(Date.now()+80000),
-  httpOnly:true
-});
+//  res.cookie("jwt", token,{
+//   expires:new Date(Date.now()+80000),
+//   httpOnly:true
+// });
   
 if(matchPassword){ return  res.status(201).send("login successfully");
 }

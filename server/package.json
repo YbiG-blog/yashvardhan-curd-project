@@ -20,6 +20,7 @@
     "mongoose": "^6.1.7",
     "mongoose-encryption": "^2.1.2",
     "nodemon": "^2.0.15",
+    "twilio": "^3.73.1",
     "validator": "^13.7.0"
   }
 }
