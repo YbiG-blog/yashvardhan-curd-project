@@ -13,7 +13,9 @@ const auth = require("./authUser/auth");
 
 const app = express();
 /// twilio
-const client = require('twilio')(process.env.TWILIO_ACCOUNT_SID, process.env.TWILIO_AUTH_TOKEN);
+const accountSid = process.env.TWILIO_ACCOUNT_SID; 
+const authToken = process.env.TWILIO_AUTH_TOKEN;
+const client = require('twilio')(accountSid, authToken);
 
 app.use(express.json());
 app.use(cookieParser());
@@ -107,6 +109,17 @@ if(password===confirmpassword){
 
 
 /// login page
+app.get("/login", async(req, res)=>{
+  
+  try{
+const userData = await User.find();
+res.send(userData);
+  }catch(err)
+  {
+  res.status(400).send(err); 
+  }
+
+});
 
 app.post("/login", async(req,res)=>{
   try{
