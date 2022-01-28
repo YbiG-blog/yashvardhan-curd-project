@@ -13,7 +13,7 @@ const auth = require("./authUser/auth");
 
 const app = express();
 /// twilio-otp-verification
-const client = require('twilio')(process.env.TWILIO_ACCOUNT_SID, process.env.TWILIO_AUTH)
+const client = require("twilio")(process.env.TWILIO_ACCOUNT_SID, process.env.TWILIO_AUTH)
 
 //Middlewares
 app.use(express.json());
