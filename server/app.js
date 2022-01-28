@@ -70,7 +70,7 @@ const checkpassword= /^(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#$%^&*])[a-zA-Z0-9!@#$%^&*]
 if(checkpassword.test(password)){
 if(password===confirmpassword){
     const newUser = new User({
-      name: req.body.name,
+  name: req.body.name,
   email: req.body.email,
   rollnum: req.body.rollnum,
   password: password,
