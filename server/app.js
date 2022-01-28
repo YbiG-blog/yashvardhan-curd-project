@@ -1,6 +1,5 @@
 //jshint esversion:6
-const dotenv = require('dotenv');
-dotenv.config();
+require('dotenv').config();
 const express = require("express");
 const mongoose = require("mongoose");
 const bcrypt = require("bcrypt");
@@ -10,10 +9,12 @@ const cookieParser = require('cookie-parser')
 require("./datacon/datacon");
 const User = require("./modelUser/User");
 const auth = require("./authUser/auth");
-const client = require('twilio')(process.env.TWILIO_ACCOUNT_SID, process.env.TWILIO_AUTH_TOKEN)
 
 
 const app = express();
+/// twilio
+const client = require('twilio')(process.env.TWILIO_ACCOUNT_SID, process.env.TWILIO_AUTH_TOKEN);
+
 app.use(express.json());
 app.use(cookieParser());
 /// twilio-otp-verification
