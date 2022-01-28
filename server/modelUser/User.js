@@ -52,11 +52,11 @@ UserSchema.methods.generateAuthToken = async function(){
   try{
     const token = jwt.sign({_id:this._id.toString()},process.env.JWT_SECRET);
    this.tokens=this.tokens.concat({token:token})
-await this.save();
-return token;    
-    //  const userverify= await jwt.verify(token,process.env.JWT_SECRET);
-    //  console.log(userverify)
+    await this.save();
 
+     const userverify= await jwt.verify(token,process.env.JWT_SECRET);
+     console.log(userverify)
+     return token;    
   }catch(err)
   {
 res.send(err);

@@ -12,12 +12,20 @@ const auth = require("./authUser/auth");
 
 
 const app = express();
-
+/// twilio-otp-verification
+const client = require('twilio')(process.env.TWILIO_ACCOUNT_SID, process.env.TWILIO_AUTH)
 
 //Middlewares
 app.use(express.json());
 app.use(cookieParser());
-
+//demo for next();
+// app.use((req,res,next)=>{
+//   console.log(req.ip);
+//   // next();
+// })
+// app.get("/",(req,res)=>{
+//   res.send("hii")
+// })
 /// find all user Data
 app.get("/register", async(req, res)=>{
   
@@ -58,6 +66,8 @@ app.post("/register", async(req, res) => {
     try{
 const password = req.body.password;
 const confirmpassword = req.body.confirmpassword;
+const checkpassword= /^(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#$%^&*])[a-zA-Z0-9!@#$%^&*]{3,10}$/ ;
+if(checkpassword.test(password)){
 if(password===confirmpassword){
     const newUser = new User({
       name: req.body.name,
@@ -67,7 +77,7 @@ if(password===confirmpassword){
   phone: req.body.phone,
   confirmpassword:confirmpassword
     });
-    // console.log(newUser);
+    console.log(newUser);
     const token = await newUser.generateAuthToken();
   console.log("token is here -> "+token)
 
@@ -79,9 +89,14 @@ if(password===confirmpassword){
     const creatUser = await newUser.save();
     res.status(201).send(creatUser);
   }
+  
   else{
     res.send("password are not matching")
   }
+}else
+{
+  res.send("password formate is not correct");
+}
   }catch(err){
   res.status(400).send(err);
     }
@@ -118,20 +133,50 @@ else{
 
   }catch(err){
   res.status(400).send("Invalid details");
-    }
-    
-
+    }  
 });
 
 
-// const createToken= async()=>{
-//  const token = await jwt.sign({_id:"61f1882eb8fc6208a57ec0fe"},process.env.JWT_SECRET,{expiresIn: "3 minutes"});
-//  console.log(token);
+// //////   twilio
 
-//  const userverify= await jwt.verify(token,process.env.JWT_SECRET);
-//  console.log(userverify)
-// }
-// createToken();
+
+app.get('/otp', (req,res) => {
+  if (req.query.phonenumber) {
+     client
+     .verify
+     .services(process.env.TWILIO_SERVICE_ID)
+     .verifications
+     .create({
+         to: `+${req.query.phonenumber}`,
+         channel: req.query.channel
+     })
+     .then(data => {
+         res.status(200).send(data);
+     })
+    }
+     else {
+      res.status(400).send("wrong phone number")
+   } 
+})
+
+app.get('/verify', (req, res) => {
+  if (req.query.phonenumber && (req.query.code).length === 6) {
+      client
+          .verify
+          .services(process.env.TWILIO_SERVICE_ID)
+          .verificationChecks
+          .create({
+              to: `+${req.query.phonenumber}`,
+              code: req.query.code
+          })
+          .then(data => {
+            res.status(200).send(data);
+        }) 
+ } else {
+     res.status(400).send("Invalid otp")
+  }
+})
+
 
 let port = process.env.PORT;
 if (port == null || port == "") {
