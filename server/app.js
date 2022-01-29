@@ -29,12 +29,35 @@ app.use(cookieParser());
 //   res.send("this is home page")
 // })
 
+app.get("/register",async(req,res)=>
+{
+     try{
+         const Usersdata = await User.find();
+         res.send(Usersdata);
+     }catch(e)
+     {
+      res.send(e);
+     }
+})
+
+app.get("/login",async(req,res)=>
+{
+    try{
+        const userdetail = await User.find();
+        res.send(userdetail);
+          }catch(err)
+          {
+          res.status(400).send(err); 
+          }
+})
+
+
 app.post("/register", async(req, res) => {
     try{
 const password = req.body.password;
 const confirmpassword = req.body.confirmpassword;
-const checkpassword= /^(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#$%^&*])[a-zA-Z0-9!@#$%^&*]{3,10}$/ ;
-if(checkpassword.test(password)){
+// const checkpassword= /^(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#$%^&*])[a-zA-Z0-9!@#$%^&*]{3,30}$/ ;
+// if(checkpassword.test(password)){
 if(password===confirmpassword){
     const newUser = new User({
   name: req.body.name,
@@ -61,10 +84,10 @@ if(password===confirmpassword){
     res.status(201).send(creatUser);
   }
   
-  else{
-    res.send("password are not matching")
-  }
-}else
+  // else{
+  //   res.send("password are not matching")
+  // }
+else
 {
   res.send("password formate is not correct");
 }
