@@ -86,13 +86,12 @@ if(!useremail){
 
 const matchPassword = await bcrypt.compare(password,useremail.password);
 const token = await useremail.generateAuthToken();
-  console.log("token is here -> "+token)
+console.log("token is here -> "+token)
  //add cookie
  res.cookie("jwt", token,{
   expires:new Date(Date.now() + 80000),
   httpOnly:true
 });
-
 
 if(matchPassword){ return  res.status(201).send("login successfully");
 }
@@ -104,7 +103,6 @@ else{
   res.status(400).send("Invalid details");
     }  
 });
-
 
 // //////   twilio
 
@@ -147,86 +145,82 @@ app.get('/otp-verify', (req, res) => {
 
 /////  password forgot and password rest
 
-// app.get("/password-forgot",(req,res,next)=>{
+app.get("/password-forgot",(req,res,next)=>{
+  res.send("hii ")
+})
 
-// })
-
-// app.post("/password-forgot",async (req,res,next)=>{
-//   try{
-//     const email = req.body.email;
-//     // const password = req.body.password;
-//     const useremail = await User.findOne({email:email});
-//     if(!useremail){
-//       return  res.status.send("Email is not found");
-//     }
-//     else if(useremail)
-//     {const secret_pass_key=process.env.JWT_SECRET+useremail.password;
-//       const tk_ch_vy={
-//         email:useremail.email,
-//         _id:useremail._id
-//       }
-//   const token_create=jwt.sign(tk_ch_vy,secret_pass_key,{
-//     expiresIn:"10m"
-//   })
+app.post("/password-forgot",async (req,res,next)=>{
+  try{
+    const email = req.body.email;
+    const useremail = await User.findOne({email:email});
+    if(!useremail){
+      return  res.status.send("Email is not found");
+    }
+    else if(useremail)
+    {const secret_key=process.env.JWT_SECRET+useremail.password;
+      const payload={
+        email:useremail.email,
+        _id:useremail._id
+      }
+  const token=jwt.sign(payload,secret_key,{
+    expiresIn:"10m"
+  })
   
-//   const link_generate=`http://localhost:3000/password-reset/${useremail._id}/${token_create}`;
-//   console.log(link_generate);
+  const link_generate=`http://localhost:3000/password-reset/${useremail._id}/${token}`;
+  console.log(link_generate);
   
-//       return  res.status(201).send("Password reset link has been sent to your email......");
-//     }
+      return  res.status(201).send("Password reset link has been sent to your email......");
+    }
 
-//       }catch(err){
-//       res.status(400).send("Invalid details");
-//         }
-// })
+      }catch(err){
+      res.status(400).send("Invalid details");
+        }
+})
 
-// app.get("/password-reset/:id/:token", async(req,res,next)=>{
-//   const userid=req.params.id;
-//   const usertoken=req.params.token;
+app.get("/password-reset/:id/:token", async(req,res,next)=>{
+  const userid=req.params.id;
+  const usertoken=req.params.token;
 
-// const useremail = await User.findOne({_id:userid});
-// if(!useremail)
-// {
-//  res.send('Invalid user-email...');
-//  return
-// }
-// const secret=process.env.JWT_SECRET+useremail.password;
+const useremail = await User.findOne({_id:userid});
+if(!useremail)
+{
+  return res.send('Invalid user-email...');
+}
+const secret=process.env.JWT_SECRET+useremail.password;
+console.log(secret);
+try{
+
+  const verify_token=jwt.verify(usertoken,secret);
+res.send({email:useremail.email});
+}catch(err){
+  res.status(400).send(err);
+}
+})
+
+app.post("/password-reset/:id/:token", async(req,res,next)=>{
+  const userid=req.params.id;
+  const usertoken=req.params.token;
+  const password = req.body.password;
+  const confirmpassword = req.body.confirmpassword;
+const useremail = await User.findOne({_id:userid});
+if(!useremail)
+{
+  return res.send('Invalid user-email...');
+}
+const secret=process.env.JWT_SECRET+useremail.password;
 // console.log(secret);
-// try{
+try{
 
-//   const verify_token=jwt.verify(usertoken,secret);
-// res.send({email:useremail.email});
-// }catch(err){
-//   res.status(400).send(err);
-// }
-// })
+  const verify_token=jwt.verify(usertoken,secret);
+useremail.password=password;
+useremail.confirmpassword=confirmpassword;
+const updateuser  = await useremail.save();
+res.send(updateuser);
 
-// app.post("/password-reset/:id/:token", async(req,res,next)=>{
-//   const userid=req.params.id;
-//   const usertoken=req.params.token;
-//   const password = req.body.password;
-//   const confirmpassword = req.body.confirmpassword;
-// const useremail = await User.findOne({_id:userid});
-// if(!useremail)
-// {
-//  res.send('Invalid user-email...');
-//  return
-// }
-// const secret=process.env.JWT_SECRET+useremail.password;
-// // console.log(secret);
-// try{
-
-//   const verify_token=jwt.verify(usertoken,secret);
-// useremail.password=password;
-// useremail.confirmpassword=confirmpassword;
-// await useremail.password.save();
-// await useremail.confirmpassword.save();
-// res.send(useremail)
-
-// }catch(err){
-//   res.status(400).send(err);
-// }
-// })
+}catch(err){
+  res.status(400).send(err);
+}
+})
 
 
 let port = process.env.PORT;
