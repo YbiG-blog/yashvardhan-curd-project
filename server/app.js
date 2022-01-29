@@ -169,7 +169,7 @@ app.post("/password-forgot",async (req,res,next)=>{
   const link_generate=`http://localhost:3000/password-reset/${useremail._id}/${token}`;
   console.log(link_generate);
   
-      return  res.status(201).send("Password reset link has been sent to your email......");
+      return  res.status(201).send("Password reset link has been sent to your email......\n"+`${link_generate}`);
     }
 
       }catch(err){
