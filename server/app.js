@@ -8,7 +8,7 @@ const jwt = require('jsonwebtoken');
 const cookieParser = require('cookie-parser')
 require("./datacon/datacon");
 const User = require("./modelUser/User");
-const auth = require("./authUser/auth");
+// const auth = require("./authUser/auth");
 
 
 const app = express();
@@ -23,10 +23,10 @@ app.use(express.json());
 app.use(cookieParser());
 
 /// for auth
-app.get("/home",auth,(req,res)=>{
+// app.get("/home",auth,(req,res)=>{
   
-  res.send("this is home page")
-})
+//   res.send("this is home page")
+// })
 
 app.post("/register", async(req, res) => {
     try{
@@ -47,15 +47,15 @@ if(password===confirmpassword){
   gen:req.body.gen,
   confirmpassword:confirmpassword
     });
-    console.log(newUser);
-    const token = await newUser.generateAuthToken();
-  console.log("token is here -> "+token)
+    // console.log(newUser);
+  //   const token = await newUser.generateAuthToken();
+  // console.log("token is here -> "+token)
 
-  //add cookie
-  res.cookie("jwt", token,{
-    expires:new Date(Date.now()+600000),
-    httpOnly:true
-  });
+  // //add cookie
+  // res.cookie("jwt", token,{
+  //   expires:new Date(Date.now()+600000),
+  //   httpOnly:true
+  // });
     const creatUser = await newUser.save();
     res.status(201).send(creatUser);
   }
@@ -85,13 +85,13 @@ if(!useremail){
 }
 
 const matchPassword = await bcrypt.compare(password,useremail.password);
-const token = await useremail.generateAuthToken();
-console.log("token is here -> "+token)
- //add cookie
- res.cookie("jwt", token,{
-  expires:new Date(Date.now() + 80000),
-  httpOnly:true
-});
+// const token = await useremail.generateAuthToken();
+// console.log("token is here -> "+token)
+//  //add cookie
+//  res.cookie("jwt", token,{
+//   expires:new Date(Date.now() + 80000),
+//   httpOnly:true
+// });
 
 if(matchPassword){ return  res.status(201).send("login successfully");
 }
@@ -166,7 +166,7 @@ app.post("/password-forgot",async (req,res,next)=>{
     expiresIn:"10m"
   })
   
-  const link_generate=`http://localhost:3000/password-reset/${useremail._id}/${token}`;
+  const link_generate=`https://curd-web.herokuapp.com/password-reset/${useremail._id}/${token}`;
   console.log(link_generate);
   
       return  res.status(201).send("Password reset link has been sent to your email......\n"+`${link_generate}`);

@@ -65,20 +65,20 @@ throw new Error("username is not Valid")
   }]
 });
 /// generate token
-UserSchema.methods.generateAuthToken = async function(){
-  try{
-    const token = jwt.sign({_id:this._id.toString()},process.env.JWT_SECRET);
-   this.tokens=this.tokens.concat({token:token})
-    await this.save();
+// UserSchema.methods.generateAuthToken = async function(){
+//   try{
+//     const token = jwt.sign({_id:this._id.toString()},process.env.JWT_SECRET);
+//    this.tokens=this.tokens.concat({token:token})
+//     await this.save();
 
-     const userverify= await jwt.verify(token,process.env.JWT_SECRET);
-     console.log(userverify)
-     return token;    
-  }catch(err)
-  {
-res.send(err);
-  }
-}
+//      const userverify= await jwt.verify(token,process.env.JWT_SECRET);
+//      console.log(userverify)
+//      return token;    
+//   }catch(err)
+//   {
+// res.send(err);
+//   }
+// }
 
 // authenticate password
 UserSchema.pre("save", async function(next){
