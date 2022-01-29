@@ -36,6 +36,23 @@ throw new Error("username is not Valid")
     unique: true,
     required: true
   },
+  address:{
+    type: String,
+    required: true
+  },
+  year:{
+    type: Number,
+    required: true,
+    min: 1,
+    max:2
+  },
+  branch:{
+    type: String,
+    required: true
+  },
+  gen:{type:String,
+  required: true
+},
   confirmpassword: {
     type: String,
     required: true
@@ -66,9 +83,7 @@ res.send(err);
 // authenticate password
 UserSchema.pre("save", async function(next){
   if(this.isModified("password")){
-    // console.log(this.password)
     this.password= await bcrypt.hash(this.password,saltRounds);
-    // console.log(this.password)
     this.confirmpassword = await bcrypt.hash(this.password,saltRounds);
   }
   next();

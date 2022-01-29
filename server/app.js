@@ -13,55 +13,18 @@ const auth = require("./authUser/auth");
 
 const app = express();
 /// twilio
+/// twilio-otp-verification
 const accountSid = process.env.TWILIO_ACCOUNT_SID; 
 const authToken = process.env.TWILIO_AUTH_TOKEN;
 const client = require('twilio')(accountSid, authToken);
 
+//Middlewares
 app.use(express.json());
 app.use(cookieParser());
-/// twilio-otp-verification
-//Middlewares
-//demo for next();
-// app.use((req,res,next)=>{
-//   console.log(req.ip);
-//   // next();
-// })
-// app.get("/",(req,res)=>{
-//   res.send("hii")
-// })
-/// find all user Data
-app.get("/register", async(req, res)=>{
-  
-  try{
-const userData = await User.find();
-res.send(userData);
-  }catch(err)
-  {
-  res.status(400).send(err); 
-  }
-
-});
-app.get("/register/:userId", async (req, res)=> {
-  try{
-    const _id= req.params.userId;
-    const singleUser = await User.findById(_id);
-if(!singleUser)
-{
- return res.status(404).send();
-}
-else
-{
-  res.send(singleUser);
-}
-      }catch(err)
-      {
-      res.status(400).send(err); 
-      }
-    const tittlename= req.params.userId;
-  })
 
 /// for auth
 app.get("/home",auth,(req,res)=>{
+  
   res.send("this is home page")
 })
 
@@ -78,6 +41,10 @@ if(password===confirmpassword){
   rollnum: req.body.rollnum,
   password: password,
   phone: req.body.phone,
+  address:req.body.address,
+  year:req.body.year,
+  branch:req.body.branch,
+  gen:req.body.gen,
   confirmpassword:confirmpassword
     });
     console.log(newUser);
@@ -86,7 +53,7 @@ if(password===confirmpassword){
 
   //add cookie
   res.cookie("jwt", token,{
-    expires:new Date(Date.now()+80000),
+    expires:new Date(Date.now()+600000),
     httpOnly:true
   });
     const creatUser = await newUser.save();
@@ -108,19 +75,6 @@ if(password===confirmpassword){
 });
 
 
-/// login page
-app.get("/login", async(req, res)=>{
-  
-  try{
-const userData = await User.find();
-res.send(userData);
-  }catch(err)
-  {
-  res.status(400).send(err); 
-  }
-
-});
-
 app.post("/login", async(req,res)=>{
   try{
 const email = req.body.email;
@@ -135,9 +89,10 @@ const token = await useremail.generateAuthToken();
   console.log("token is here -> "+token)
  //add cookie
  res.cookie("jwt", token,{
-  expires:new Date(Date.now()+80000),
+  expires:new Date(Date.now() + 80000),
   httpOnly:true
 });
+
 
 if(matchPassword){ return  res.status(201).send("login successfully");
 }
@@ -153,8 +108,7 @@ else{
 
 // //////   twilio
 
-
-app.get('/otp', (req,res) => {
+app.get('/otp-send', (req,res) => {
   if (req.query.phonenumber) {
      client
      .verify
@@ -173,7 +127,7 @@ app.get('/otp', (req,res) => {
    } 
 })
 
-app.get('/verify', (req, res) => {
+app.get('/otp-verify', (req, res) => {
   if (req.query.phonenumber && (req.query.code).length === 6) {
       client
           .verify
@@ -190,6 +144,89 @@ app.get('/verify', (req, res) => {
      res.status(400).send("Invalid otp")
   }
 })
+
+/////  password forgot and password rest
+
+// app.get("/password-forgot",(req,res,next)=>{
+
+// })
+
+// app.post("/password-forgot",async (req,res,next)=>{
+//   try{
+//     const email = req.body.email;
+//     // const password = req.body.password;
+//     const useremail = await User.findOne({email:email});
+//     if(!useremail){
+//       return  res.status.send("Email is not found");
+//     }
+//     else if(useremail)
+//     {const secret_pass_key=process.env.JWT_SECRET+useremail.password;
+//       const tk_ch_vy={
+//         email:useremail.email,
+//         _id:useremail._id
+//       }
+//   const token_create=jwt.sign(tk_ch_vy,secret_pass_key,{
+//     expiresIn:"10m"
+//   })
+  
+//   const link_generate=`http://localhost:3000/password-reset/${useremail._id}/${token_create}`;
+//   console.log(link_generate);
+  
+//       return  res.status(201).send("Password reset link has been sent to your email......");
+//     }
+
+//       }catch(err){
+//       res.status(400).send("Invalid details");
+//         }
+// })
+
+// app.get("/password-reset/:id/:token", async(req,res,next)=>{
+//   const userid=req.params.id;
+//   const usertoken=req.params.token;
+
+// const useremail = await User.findOne({_id:userid});
+// if(!useremail)
+// {
+//  res.send('Invalid user-email...');
+//  return
+// }
+// const secret=process.env.JWT_SECRET+useremail.password;
+// console.log(secret);
+// try{
+
+//   const verify_token=jwt.verify(usertoken,secret);
+// res.send({email:useremail.email});
+// }catch(err){
+//   res.status(400).send(err);
+// }
+// })
+
+// app.post("/password-reset/:id/:token", async(req,res,next)=>{
+//   const userid=req.params.id;
+//   const usertoken=req.params.token;
+//   const password = req.body.password;
+//   const confirmpassword = req.body.confirmpassword;
+// const useremail = await User.findOne({_id:userid});
+// if(!useremail)
+// {
+//  res.send('Invalid user-email...');
+//  return
+// }
+// const secret=process.env.JWT_SECRET+useremail.password;
+// // console.log(secret);
+// try{
+
+//   const verify_token=jwt.verify(usertoken,secret);
+// useremail.password=password;
+// useremail.confirmpassword=confirmpassword;
+// await useremail.password.save();
+// await useremail.confirmpassword.save();
+// res.send(useremail)
+
+// }catch(err){
+//   res.status(400).send(err);
+// }
+// })
 
 
 let port = process.env.PORT;
