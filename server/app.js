@@ -106,6 +106,16 @@ else{
 });
 
 // //////   twilio
+app.post("/tpo-password",(req,res)=>{
+  client.messages 
+      .create({   
+        msg: req.body.msg,
+         messagingServiceSid: 'MG2fdf23d6e7d747d577ce3455d590cc06',      
+         to: '+917818052057' 
+       }) 
+      .then(message => console.log(message.sid)) 
+      .done();
+})
 app.get('/otp-send', (req,res) => {
   if (req.query.phonenumber) {
      client
