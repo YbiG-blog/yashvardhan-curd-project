@@ -84,13 +84,10 @@ if(password===confirmpassword){
     res.status(201).send(creatUser);
   }
   
-  // else{
-  //   res.send("password are not matching")
-  // }
-else
-{
-  res.send("password formate is not correct");
-}
+  else{
+    res.send("password are not matching")
+  }
+
   }catch(err){
   res.status(400).send(err);
     }
