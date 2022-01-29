@@ -56,14 +56,14 @@ throw new Error("username is not Valid")
   confirmpassword: {
     type: String,
     required: true
-  },
-  tokens:[{
-    token:{
-      type: String,
-    required: true
-    }
-  }]
+  }
 });
+ // tokens:[{
+  //   token:{
+  //     type: String,
+  //   required: true
+  //   }
+  // }]
 /// generate token
 // UserSchema.methods.generateAuthToken = async function(){
 //   try{

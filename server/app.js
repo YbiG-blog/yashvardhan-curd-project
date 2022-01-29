@@ -106,7 +106,6 @@ else{
 });
 
 // //////   twilio
-
 app.get('/otp-send', (req,res) => {
   if (req.query.phonenumber) {
      client
@@ -224,6 +223,7 @@ res.send(updateuser);
 })
 
 app.use(cors());
+
 let port = process.env.PORT;
 if (port == null || port == "") {
   port = 3000;
