@@ -2,6 +2,7 @@
 require('dotenv').config();
 const express = require("express");
 const mongoose = require("mongoose");
+const cors=require("cors");
 const bcrypt = require("bcrypt");
 const saltRounds = 10;
 const jwt = require('jsonwebtoken');
@@ -222,7 +223,7 @@ res.send(updateuser);
 }
 })
 
-
+app.use(cors());
 let port = process.env.PORT;
 if (port == null || port == "") {
   port = 3000;
