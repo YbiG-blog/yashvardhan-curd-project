@@ -25,7 +25,7 @@ app.use(cookieParser());
 
 /// for auth
 // app.get("/home",auth,(req,res)=>{
-  
+  // const checkpassword= /^(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#$%^&*])[a-zA-Z0-9!@#$%^&*]{3,30}$/ ;
 //   res.send("this is home page")
 // })
 
@@ -56,8 +56,8 @@ app.post("/register", async(req, res) => {
     try{
 const password = req.body.password;
 const confirmpassword = req.body.confirmpassword;
-// const checkpassword= /^(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#$%^&*])[a-zA-Z0-9!@#$%^&*]{3,30}$/ ;
-// if(checkpassword.test(password)){
+const checkpassword = /^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[#?!@$%^&*-]).{8,}$/;
+ if(checkpassword.test(password)){
 if(password===confirmpassword){
     const newUser = new User({
   name: req.body.name,
@@ -83,10 +83,14 @@ if(password===confirmpassword){
     const creatUser = await newUser.save();
     res.status(201).send(creatUser);
   }
-  
-  else{
+   else{
     res.send("password are not matching")
   }
+}
+else
+{
+  res.send("password formate is not correct")
+}
 
   }catch(err){
   res.status(400).send(err);
@@ -156,7 +160,7 @@ app.get('/otp-send', (req,res) => {
 })
 
 app.get('/otp-verify', (req, res) => {
-  if (req.query.phonenumber && (req.query.code).length === 6) {
+  if (req.query.phonenumber && (req.query.code).length === 4) {
       client
           .verify
           .services(process.env.TWILIO_SERVICE_ID)
@@ -199,7 +203,7 @@ app.post("/password-forgot",async (req,res,next)=>{
   const link_generate=`https://curd-web.herokuapp.com/password-reset/${useremail._id}/${token}`;
   console.log(link_generate);
   
-      return  res.status(201).send("Password reset link has been sent to your email......\n"+`${link_generate}`);
+    return res.status(201).send("Password reset link has been sent to your email......\n"+`${link_generate}`);
     }
 
       }catch(err){

@@ -1,5 +1,5 @@
 // /////  password forgot and password rest
-
+//    const strongPasswords = /^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[#?!@$%^&*-]).{8,}$/;
 // app.get("/password-forgot",(req,res,next)=>{
 
 // })

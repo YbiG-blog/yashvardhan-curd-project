@@ -1,7 +1,6 @@
 {
   "name": "authentication",
   "version": "1.0.0",
-  "proxy": "https://curd-web.herokuapp.com",
   "description": "this is the authentication part of my webD course.",
   "main": "app.js",
   "scripts": {
