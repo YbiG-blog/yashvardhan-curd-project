@@ -56,29 +56,33 @@ throw new Error("username is not Valid")
   confirmpassword: {
     type: String,
     required: true
-  }
+  },
+  tokens:[{
+    token:{
+      type: String,
+    required: true
+    }
+  }]
 });
- // tokens:[{
-  //   token:{
-  //     type: String,
-  //   required: true
-  //   }
-  // }]
-/// generate token
-// UserSchema.methods.generateAuthToken = async function(){
-//   try{
-//     const token = jwt.sign({_id:this._id.toString()},process.env.JWT_SECRET);
-//    this.tokens=this.tokens.concat({token:token})
-//     await this.save();
 
-//      const userverify= await jwt.verify(token,process.env.JWT_SECRET);
-//      console.log(userverify)
-//      return token;    
-//   }catch(err)
-//   {
-// res.send(err);
-//   }
-// }
+/// generate token
+UserSchema.methods.generateAuthToken = async function(){
+  try{
+    const token = jwt.sign({_id:this._id.toString()},process.env.JWT_SECRET);
+   this.tokens=this.tokens.concat({token:token})
+    await this.save();
+
+     const userverify= await jwt.verify(token,process.env.JWT_SECRET);
+     const token_obj={
+       id:userverify,
+       token:token
+     }
+     return token_obj;    
+  }catch(err)
+  {
+res.send(err);
+  }
+}
 
 // authenticate password
 UserSchema.pre("save", async function(next){

@@ -9,8 +9,7 @@ const jwt = require('jsonwebtoken');
 const cookieParser = require('cookie-parser')
 require("./datacon/datacon");
 const User = require("./modelUser/User");
-// const auth = require("./authUser/auth");
-
+const auth = require("./authUser/auth");
 
 const app = express();
 /// twilio
@@ -24,11 +23,16 @@ app.use(express.json());
 app.use(cookieParser());
 
 /// for auth
-// app.get("/home",auth,(req,res)=>{
-  // const checkpassword= /^(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#$%^&*])[a-zA-Z0-9!@#$%^&*]{3,30}$/ ;
-//   res.send("this is home page")
-// })
 
+app.get("/home", async(req,res)=>{
+  res.cookie("jwtt",'uherjewjfwejfsjfsjsfd');
+  // console.log(req.cookies.jwtt);
+  res.send("this is secrets page")
+})
+app.get("/h",async(req,res,next)=>{
+  console.log(req.cookies.jwtt);
+  next();
+})
 app.get("/register",async(req,res)=>
 {
      try{
@@ -40,22 +44,11 @@ app.get("/register",async(req,res)=>
      }
 })
 
-app.get("/login",async(req,res)=>
-{
-    try{
-        const userdetail = await User.find();
-        res.send(userdetail);
-          }catch(err)
-          {
-          res.status(400).send(err); 
-          }
-})
-
-
 app.post("/register", async(req, res) => {
     try{
 const password = req.body.password;
 const confirmpassword = req.body.confirmpassword;
+const opt_num = Math.floor(1000 + Math.random() * 9000);
 const checkpassword = /^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[#?!@$%^&*-]).{8,}$/;
  if(checkpassword.test(password)){
 if(password===confirmpassword){
@@ -69,17 +62,11 @@ if(password===confirmpassword){
   year:req.body.year,
   branch:req.body.branch,
   gen:req.body.gen,
-  confirmpassword:confirmpassword
+  confirmpassword:confirmpassword,
     });
-    // console.log(newUser);
-  //   const token = await newUser.generateAuthToken();
-  // console.log("token is here -> "+token)
-
-  // //add cookie
-  // res.cookie("jwt", token,{
-  //   expires:new Date(Date.now()+600000),
-  //   httpOnly:true
-  // });
+  //   this.otp_val=opt_num
+  //  await this.save();
+     
     const creatUser = await newUser.save();
     res.status(201).send(creatUser);
   }
@@ -100,7 +87,7 @@ else
 });
 
 
-app.post("/login", async(req,res)=>{
+app.post("/login",async(req,res)=>{
   try{
 const email = req.body.email;
 const password = req.body.password;
@@ -110,15 +97,15 @@ if(!useremail){
 }
 
 const matchPassword = await bcrypt.compare(password,useremail.password);
-// const token = await useremail.generateAuthToken();
-// console.log("token is here -> "+token)
+
+const token = await useremail.generateAuthToken();
+
 //  //add cookie
 //  res.cookie("jwt", token,{
 //   expires:new Date(Date.now() + 80000),
 //   httpOnly:true
 // });
-
-if(matchPassword){ return  res.status(201).send("login successfully");
+if(matchPassword){ return  res.status(201).send(token);
 }
 else{
   res.send("Wrong password");
@@ -130,16 +117,6 @@ else{
 });
 
 // //////   twilio
-app.post("/tpo-password",(req,res)=>{
-  client.messages 
-      .create({   
-        msg: req.body.msg,
-         messagingServiceSid: 'MG2fdf23d6e7d747d577ce3455d590cc06',      
-         to: '+917818052057' 
-       }) 
-      .then(message => console.log(message.sid)) 
-      .done();
-})
 app.get('/otp-send', (req,res) => {
   if (req.query.phonenumber) {
      client
@@ -170,13 +147,12 @@ app.get('/otp-verify', (req, res) => {
               code: req.query.code
           })
           .then(data => {
-            res.status(200).send("tour otp has been approved");
+            res.status(200).send("your otp has been approved");
         }) 
  } else {
      res.status(400).send("Invalid otp")
   }
 })
-
 /////  password forgot and password rest
 
 app.get("/password-forgot",(req,res,next)=>{
@@ -245,7 +221,7 @@ const secret=process.env.JWT_SECRET+useremail.password;
 // console.log(secret);
 try{
 
-  const verify_token=jwt.verify(usertoken,secret);
+const verify_token=jwt.verify(usertoken,secret);
 useremail.password=password;
 useremail.confirmpassword=confirmpassword;
 const updateuser  = await useremail.save();
@@ -255,6 +231,8 @@ res.send(updateuser);
   res.status(400).send(err);
 }
 })
+
+
 
 app.use(cors());
 
