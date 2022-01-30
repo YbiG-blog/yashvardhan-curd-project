@@ -151,7 +151,7 @@ app.get('/otp-send', (req,res) => {
          channel: req.query.channel
      })
      .then(data => {
-         res.status(200).send(data);
+         res.status(200).send("otp has been sent your registered number.........");
      })
     }
      else {
@@ -170,7 +170,7 @@ app.get('/otp-verify', (req, res) => {
               code: req.query.code
           })
           .then(data => {
-            res.status(200).send(data);
+            res.status(200).send("tour otp has been approved");
         }) 
  } else {
      res.status(400).send("Invalid otp")
