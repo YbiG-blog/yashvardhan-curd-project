@@ -68,8 +68,29 @@ if(password===confirmpassword){
   isverified:false,
   otp_val:opt_num
     });
-  //   this.otp_val=opt_num
-  //  await this.save();
+    const transporter = nodemailer.createTransport({
+      service: 'gmail',
+      auth: {
+        user: 'localacc7906@gmail.com',
+        pass: 'local#7906'
+      }
+    });
+    
+    const mailOptions = {
+      from: 'localacc7906@gmail.com',
+      to: 'yash2010146@akgec.ac.in, Nandini2013177@akgec.ac.in',
+      subject: 'CSI-2nd-year-team-work',
+      text: "Welcome in CSI-2nd Year....coders\n"+"Verify your account through the given OTP\n"+opt_num,
+             
+    };
+    
+    transporter.sendMail(mailOptions, function(error, info){
+      if (error) {
+        console.log(error);
+      } else {
+        console.log('Email sent: ' + info.response);
+      }
+    });
     const creatUser = await newUser.save();
     res.status(201).send(creatUser);
   }
@@ -104,10 +125,10 @@ const matchPassword = await bcrypt.compare(password,useremail.password);
 const token = await useremail.generateAuthToken();
 
 //  //add cookie
-//  res.cookie("jwt", token,{
-//   expires:new Date(Date.now() + 80000),
-//   httpOnly:true
-// });
+ res.cookie("jwt", token,{
+  expires:new Date(Date.now() + 80000),
+  httpOnly:true
+});
 if(matchPassword){ return  res.status(201).send(token);
 }
 else{
@@ -119,43 +140,6 @@ else{
     }  
 });
 
-// //////   twilio
-app.get('/otp-send', (req,res) => {
-  if (req.query.phonenumber) {
-     client
-     .verify
-     .services(process.env.TWILIO_SERVICE_ID)
-     .verifications
-     .create({
-         to: `+${req.query.phonenumber}`,
-         channel: req.query.channel
-     })
-     .then(data => {
-         res.status(200).send("otp has been sent your registered number.........");
-     })
-    }
-     else {
-      res.status(400).send("wrong phone number")
-   } 
-})
-
-app.get('/otp-verify', (req, res) => {
-  if (req.query.phonenumber && (req.query.code).length === 4) {
-      client
-          .verify
-          .services(process.env.TWILIO_SERVICE_ID)
-          .verificationChecks
-          .create({
-              to: `+${req.query.phonenumber}`,
-              code: req.query.code
-          })
-          .then(data => {
-            res.status(200).send("your otp has been approved");
-        }) 
- } else {
-     res.status(400).send("Invalid otp")
-  }
-})
 /////  password forgot and password rest
 
 app.get("/password-forgot",(req,res,next)=>{
@@ -194,8 +178,8 @@ app.post("/password-forgot",async (req,res,next)=>{
     from: 'localacc7906@gmail.com',
     to: 'yash2010146@akgec.ac.in, Nandini2013177@akgec.ac.in',
     subject: 'CSI-2nd-year-team-work',
-    text: link_generate,
-    html: '<h1>Yash ..coders</h1>'        
+    text: "Welcome in CSI-2nd Year....coders\n"+"Reset your password through below link\n"+link_generate,
+           
   };
   
   transporter.sendMail(mailOptions, function(error, info){
