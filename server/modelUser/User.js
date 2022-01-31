@@ -57,6 +57,14 @@ throw new Error("username is not Valid")
     type: String,
     required: true
   },
+  isverified:{
+      type: Boolean,
+      default: false
+},
+otp_val:
+{
+    type:String 
+},
   tokens:[{
     token:{
       type: String,

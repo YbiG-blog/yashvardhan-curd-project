@@ -10,6 +10,7 @@ const cookieParser = require('cookie-parser')
 require("./datacon/datacon");
 const User = require("./modelUser/User");
 const auth = require("./authUser/auth");
+const nodemailer = require('nodemailer');
 
 const app = express();
 /// twilio
@@ -17,6 +18,7 @@ const app = express();
 const accountSid = process.env.TWILIO_ACCOUNT_SID; 
 const authToken = process.env.TWILIO_AUTH_TOKEN;
 const client = require('twilio')(accountSid, authToken);
+const API_KEY='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';
 
 //Middlewares
 app.use(express.json());
@@ -63,10 +65,11 @@ if(password===confirmpassword){
   branch:req.body.branch,
   gen:req.body.gen,
   confirmpassword:confirmpassword,
+  isverified:false,
+  otp_val:opt_num
     });
   //   this.otp_val=opt_num
   //  await this.save();
-     
     const creatUser = await newUser.save();
     res.status(201).send(creatUser);
   }
@@ -175,18 +178,42 @@ app.post("/password-forgot",async (req,res,next)=>{
   const token=jwt.sign(payload,secret_key,{
     expiresIn:"10m"
   })
-  
+  link_flag=true;
   const link_generate=`https://curd-web.herokuapp.com/password-reset/${useremail._id}/${token}`;
-  console.log(link_generate);
+ 
+
+  const transporter = nodemailer.createTransport({
+    service: 'gmail',
+    auth: {
+      user: 'localacc7906@gmail.com',
+      pass: 'local#7906'
+    }
+  });
   
-    return res.status(201).send("Password reset link has been sent to your email......\n"+`${link_generate}`);
+  const mailOptions = {
+    from: 'localacc7906@gmail.com',
+    to: 'yash2010146@akgec.ac.in',
+    subject: 'CSI-2nd-year-team-work',
+    text: link_generate
+    // html: '<h1>Hi Smartherd</h1><p>Your Messsage</p>'        
+  };
+  
+  transporter.sendMail(mailOptions, function(error, info){
+    if (error) {
+      console.log(error);
+    } else {
+      console.log('Email sent: ' + info.response);
+    }
+  });
+
+    return res.status(201).send("Password reset link has been sent to your email......");
     }
 
       }catch(err){
       res.status(400).send("Invalid details");
         }
 })
-
+  
 app.get("/password-reset/:id/:token", async(req,res,next)=>{
   const userid=req.params.id;
   const usertoken=req.params.token;
