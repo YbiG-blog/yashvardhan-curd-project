@@ -192,10 +192,10 @@ app.post("/password-forgot",async (req,res,next)=>{
   
   const mailOptions = {
     from: 'localacc7906@gmail.com',
-    to: 'yash2010146@akgec.ac.in',
+    to: 'yash2010146@akgec.ac.in, Nandini2013177@akgec.ac.in',
     subject: 'CSI-2nd-year-team-work',
-    text: link_generate
-    // html: '<h1>Hi Smartherd</h1><p>Your Messsage</p>'        
+    text: link_generate,
+    html: '<h1>Yash ..coders</h1>'        
   };
   
   transporter.sendMail(mailOptions, function(error, info){
