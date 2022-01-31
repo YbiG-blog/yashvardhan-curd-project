@@ -63,7 +63,7 @@ throw new Error("username is not Valid")
 },
 otp_val:
 {
-    type:String 
+    type:Number 
 },
 resetpassword:{
   type:String

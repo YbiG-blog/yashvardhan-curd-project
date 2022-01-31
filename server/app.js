@@ -145,7 +145,6 @@ else{
   res.status(400).send("Invalid details");
     }  
 });
-
 /////  password forgot and password rest
 
 app.get("/password-forgot",(req,res,next)=>{
@@ -154,7 +153,7 @@ app.get("/password-forgot",(req,res,next)=>{
 app.post('/password-forgot',async(req,res,next) =>
   {
     try{
-    const email = req.body.email;
+    // const email = req.body.email;
     const useremail = await User.findOne({email: req.body.email});
     if(!useremail)  
     {
