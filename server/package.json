@@ -22,7 +22,6 @@
     "mongoose-encryption": "^2.1.2",
     "nodemailer": "^6.7.2",
     "nodemon": "^2.0.15",
-    "twilio": "^3.73.1",
     "validator": "^13.7.0"
   }
 }

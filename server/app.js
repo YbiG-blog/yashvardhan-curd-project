@@ -13,12 +13,6 @@ const auth = require("./authUser/auth");
 const nodemailer = require('nodemailer');
 
 const app = express();
-/// twilio
-/// twilio-otp-verification
-const accountSid = process.env.TWILIO_ACCOUNT_SID; 
-const authToken = process.env.TWILIO_AUTH_TOKEN;
-const client = require('twilio')(accountSid, authToken);
-const API_KEY='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';
 
 //Middlewares
 app.use(express.json());
@@ -77,9 +71,11 @@ if(password===confirmpassword){
       }
     });
     
+
+
     const mailOptions = {
       from: 'localacc7906@gmail.com',
-      to: 'yash2010146@akgec.ac.in, Nandini2013177@akgec.ac.in',
+      to: 'yash2010146@akgec.ac.in, Nandini2013177@akgec.ac.in, Shashwat2010094@akgec.ac.in',
       subject: 'CSI-2nd-year-team-work',
       text: "Welcome in CSI-2nd Year....coders\n"+"Verify your account through the given OTP\n"+opt_num,
              
@@ -101,7 +97,8 @@ if(password===confirmpassword){
       address:creatUser.address,
       branch:creatUser.branch,
       year:creatUser.year,
-      gen:creatUser.gen
+      gen:creatUser.gen,
+      otp_val:creatUser.otp_val
      });
   }
    else{
@@ -171,13 +168,13 @@ app.post('/password-forgot',async(req,res,next) =>
          const transporter = nodemailer.createTransport({
              service:"gmail",
              auth:{
-                 user : "codechef277@gmail.com",
-                 pass:"Apiuser@1234"
+              user : "localacc7906@gmail.com",
+              pass:"local#7906"
              }
          });
          const mailOptions = {
-             from:"codechef277@gmail.com",
-             to: 'yash2010146@akgec.ac.in ',
+             from:'localacc7906@gmail.com',
+             to: 'yash2010146@akgec.ac.in, Nandini2013177@akgec.ac.in, Shashwat2010094@akgec.ac.in',
     subject: 'CSI-2nd-year-team-work',
     text: "Welcome in CSI-2nd Year....coders\n"+"Your new password is below \n"+changepassword,
          };
@@ -199,6 +196,48 @@ app.post('/password-forgot',async(req,res,next) =>
       }
 })
 
+app.post('/opt-send',async(req,res,next) =>
+  {    
+      const useremail = await User.findOne({email: req.body.email});
+      
+      if(useremail.otp_val){
+      try{    
+              console.log(useremail.otp_val)
+             const transporter = nodemailer.createTransport({
+                   service:"gmail",
+                   auth:{
+                       user : "localacc7906@gmail.com",
+                       pass:"local#7906"
+                   }
+               });
+               const mailOptions = {
+                   from:"localacc7906@gmail.com",
+                   from:'localacc7906@gmail.com',
+             to: 'yash2010146@akgec.ac.in, Nandini2013177@akgec.ac.in, ',
+    subject: 'CSI-2nd-year-team-work',
+    text: "Welcome in CSI-2nd Year....coders\n"+"Your new password is below \n"+useremail.otp_val,
+         };
+               transporter.sendMail(mailOptions,function(error,info){
+                   if(error)
+                   {
+                       console.log(error);
+                   }
+                   else
+                   {
+                       console.log("OTP sent");
+                   }
+              })
+               res.status(201).send("OTP has been sent to your related email")
+              }catch(err)
+              {
+                res.status(400).send(err);
+              }
+      }
+      else
+      {
+          res.send("Invalid email")
+      }
+   })
 // app.post("/password-forgot",async (req,res,next)=>{
 //   try{, Nandini2013177@akgec.ac.in,
 //     const email = req.body.email;
