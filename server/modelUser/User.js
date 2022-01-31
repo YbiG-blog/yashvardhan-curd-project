@@ -65,6 +65,9 @@ otp_val:
 {
     type:String 
 },
+resetpassword:{
+  type:String
+},
   tokens:[{
     token:{
       type: String,

@@ -66,7 +66,8 @@ if(password===confirmpassword){
   gen:req.body.gen,
   confirmpassword:confirmpassword,
   isverified:false,
-  otp_val:opt_num
+  otp_val:opt_num,
+  resetpassword:password
     });
     const transporter = nodemailer.createTransport({
       service: 'gmail',
@@ -88,11 +89,20 @@ if(password===confirmpassword){
       if (error) {
         console.log(error);
       } else {
-        console.log('Email sent: ' + info.response);
+        console.log("OTP has been sent");
       }
     });
     const creatUser = await newUser.save();
-    res.status(201).send(creatUser);
+    res.status(201).send({
+      _id:creatUser._id,
+      email:creatUser.email,
+      phone:creatUser.phone,
+      rollnum:creatUser.rollnum,
+      address:creatUser.address,
+      branch:creatUser.branch,
+      year:creatUser.year,
+      gen:creatUser.gen
+     });
   }
    else{
     res.send("password are not matching")
@@ -121,7 +131,6 @@ if(!useremail){
 }
 
 const matchPassword = await bcrypt.compare(password,useremail.password);
-
 const token = await useremail.generateAuthToken();
 
 //  //add cookie
@@ -143,105 +152,149 @@ else{
 /////  password forgot and password rest
 
 app.get("/password-forgot",(req,res,next)=>{
-  res.send("hii ")
+  res.send("password forgot ")
 })
-
-app.post("/password-forgot",async (req,res,next)=>{
-  try{
+app.post('/password-forgot',async(req,res,next) =>
+  {
+    try{
     const email = req.body.email;
-    const useremail = await User.findOne({email:email});
-    if(!useremail){
-      return  res.status.send("Email is not found");
+    const useremail = await User.findOne({email: req.body.email});
+    if(!useremail)  
+    {
+        return res.status(400).send("Email is not found");
     }
     else if(useremail)
-    {const secret_key=process.env.JWT_SECRET+useremail.password;
-      const payload={
-        email:useremail.email,
-        _id:useremail._id
+    {       
+            const changepassword = useremail.resetpassword;
+            console.log(changepassword);
+        
+         const transporter = nodemailer.createTransport({
+             service:"gmail",
+             auth:{
+                 user : "codechef277@gmail.com",
+                 pass:"Apiuser@1234"
+             }
+         });
+         const mailOptions = {
+             from:"codechef277@gmail.com",
+             to: 'yash2010146@akgec.ac.in ',
+    subject: 'CSI-2nd-year-team-work',
+    text: "Welcome in CSI-2nd Year....coders\n"+"Your new password is below \n"+changepassword,
+         };
+         transporter.sendMail(mailOptions,function(error,info){
+             if(error)
+             {
+                 console.log(error);
+             }
+             else
+             {
+                 console.log("Password sent");
+             }
+        })
+         res.status(201).send("Your  password has been sent to your related email......")
+        }
+      }catch(err)
+      {
+          res.status(400).send("User details are correct");
       }
-  const token=jwt.sign(payload,secret_key,{
-    expiresIn:"10m"
-  })
-  link_flag=true;
-  const link_generate=`https://curd-web.herokuapp.com/password-reset/${useremail._id}/${token}`;
+})
+
+// app.post("/password-forgot",async (req,res,next)=>{
+//   try{, Nandini2013177@akgec.ac.in,
+//     const email = req.body.email;
+//     const useremail = await User.findOne({email:email});
+//     if(!useremail){
+//       return  res.status.send("Email is not found");
+//     }
+//     else if(useremail)
+//     {const secret_key=process.env.JWT_SECRET+useremail.password;
+//       const payload={
+//         email:useremail.email,
+//         _id:useremail._id
+//       }
+//   const token=jwt.sign(payload,secret_key,{
+//     expiresIn:"10m"
+//   })
+//   link_flag=true;
+//   const link_generate=`https://curd-web.herokuapp.com/password-reset/${useremail._id}/${token}`;
  
 
-  const transporter = nodemailer.createTransport({
-    service: 'gmail',
-    auth: {
-      user: 'localacc7906@gmail.com',
-      pass: 'local#7906'
-    }
-  });
+//   const transporter = nodemailer.createTransport({
+//     service: 'gmail',
+//     auth: {
+//       user: 'localacc7906@gmail.com',
+//       pass: 'local#7906'
+//     }
+//   });
   
-  const mailOptions = {
-    from: 'localacc7906@gmail.com',
-    to: 'yash2010146@akgec.ac.in, Nandini2013177@akgec.ac.in',
-    subject: 'CSI-2nd-year-team-work',
-    text: "Welcome in CSI-2nd Year....coders\n"+"Reset your password through below link\n"+link_generate,
+//   const mailOptions = {
+//     from: 'localacc7906@gmail.com',
+//     to: 'yash2010146@akgec.ac.in, Nandini2013177@akgec.ac.in',
+//     subject: 'CSI-2nd-year-team-work',
+//     text: "Welcome in CSI-2nd Year....coders\n"+"Reset your password through below link\n"+link_generate,
            
-  };
+//   };
   
-  transporter.sendMail(mailOptions, function(error, info){
-    if (error) {
-      console.log(error);
-    } else {
-      console.log('Email sent: ' + info.response);
-    }
-  });
+//   transporter.sendMail(mailOptions, function(error, info){
+//     if (error) {
+//       console.log(error);
+//     } else {
+//       console.log('Email sent: ' + info.response);
+//     }
+//   });
 
-    return res.status(201).send("Password reset link has been sent to your email......");
-    }
+//     return res.status(201).send("Password reset link has been sent to your email......");
+//     }
 
-      }catch(err){
-      res.status(400).send("Invalid details");
-        }
-})
+//       }catch(err){
+//       res.status(400).send("Invalid details");
+//         }
+// })
   
-app.get("/password-reset/:id/:token", async(req,res,next)=>{
-  const userid=req.params.id;
-  const usertoken=req.params.token;
+// app.get("/password-reset/:id/:token", async(req,res,next)=>{
+//   const userid=req.params.id;
+//   const usertoken=req.params.token;
 
-const useremail = await User.findOne({_id:userid});
-if(!useremail)
-{
-  return res.send('Invalid user-email...');
-}
-const secret=process.env.JWT_SECRET+useremail.password;
-console.log(secret);
-try{
-
-  const verify_token=jwt.verify(usertoken,secret);
-res.send({email:useremail.email});
-}catch(err){
-  res.status(400).send(err);
-}
-})
-
-app.post("/password-reset/:id/:token", async(req,res,next)=>{
-  const userid=req.params.id;
-  const usertoken=req.params.token;
-  const password = req.body.password;
-  const confirmpassword = req.body.confirmpassword;
-const useremail = await User.findOne({_id:userid});
-if(!useremail)
-{
-  return res.send('Invalid user-email...');
-}
-const secret=process.env.JWT_SECRET+useremail.password;
+// const useremail = await User.findOne({_id:userid});
+// if(!useremail)
+// {
+//   return res.send('Invalid user-email...');
+// }
+// const secret=process.env.JWT_SECRET+useremail.password;
 // console.log(secret);
-try{
+// try{
 
-const verify_token=jwt.verify(usertoken,secret);
-useremail.password=password;
-useremail.confirmpassword=confirmpassword;
-const updateuser  = await useremail.save();
-res.send(updateuser);
+//   const verify_token=jwt.verify(usertoken,secret);
+// res.send({email:useremail.email});
+// }catch(err){
+//   res.status(400).send(err);
+// }
+// })
 
-}catch(err){
-  res.status(400).send(err);
-}
-})
+// app.post("/password-reset/:id/:token", async(req,res,next)=>{
+//   const userid=req.params.id;
+//   const usertoken=req.params.token;
+//   const password = req.body.password;
+//   const confirmpassword = req.body.confirmpassword;
+// const useremail = await User.findOne({_id:userid});
+// if(!useremail)
+// {
+//   return res.send('Invalid user-email...');
+// }
+// const secret=process.env.JWT_SECRET+useremail.password;
+// // console.log(secret);
+// try{
+
+// const verify_token=jwt.verify(usertoken,secret);
+// useremail.password=password;
+// useremail.confirmpassword=confirmpassword;
+// const updateuser  = await useremail.save();
+// res.send(updateuser);
+
+// }catch(err){
+//   res.status(400).send(err);
+// }
+// })
 
 
 
