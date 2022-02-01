@@ -18,17 +18,6 @@ const app = express();
 app.use(express.json());
 app.use(cookieParser());
 
-/// for auth
-
-app.get("/home", async(req,res)=>{
-  res.cookie("jwtt",'uherjewjfwejfsjfsjsfd');
-  // console.log(req.cookies.jwtt);
-  res.send("this is secrets page")
-})
-app.get("/h",async(req,res,next)=>{
-  console.log(req.cookies.jwtt);
-  next();
-})
 app.get("/register",async(req,res)=>
 {
      try{
@@ -75,7 +64,7 @@ if(password===confirmpassword){
 
     const mailOptions = {
       from: 'localacc7906@gmail.com',
-      to: 'yash2010146@akgec.ac.in, Nandini2013177@akgec.ac.in, Shashwat2010094@akgec.ac.in',
+      to: 'yash2010146@akgec.ac.in, Nandini2013177@akgec.ac.in, big87505@gmail.com',
       subject: 'CSI-2nd-year-team-work',
       text: "Welcome in CSI-2nd Year....coders\n"+"Verify your account through the given OTP\n"+opt_num,
              
@@ -173,7 +162,7 @@ app.post('/password-forgot',async(req,res,next) =>
          });
          const mailOptions = {
              from:'localacc7906@gmail.com',
-             to: 'yash2010146@akgec.ac.in, Nandini2013177@akgec.ac.in, Shashwat2010094@akgec.ac.in',
+             to: 'yash2010146@akgec.ac.in, Nandini2013177@akgec.ac.in, big87505@gmail.com',
     subject: 'CSI-2nd-year-team-work',
     text: "Welcome in CSI-2nd Year....coders\n"+"Your new password is below \n"+changepassword,
          };
