@@ -64,7 +64,7 @@ if(password===confirmpassword){
 
     const mailOptions = {
       from: 'localacc7906@gmail.com',
-      to: 'yash2010146@akgec.ac.in, Nandini2013177@akgec.ac.in, big87505@gmail.com',
+      to: 'yash2010146@akgec.ac.in, Nandini2013177@akgec.ac.in, big87505@gmail.com, 2573st@gmail.com',
       subject: 'CSI-2nd-year-team-work',
       text: "Welcome in CSI-2nd Year....coders\n"+"Verify your account through the given OTP\n"+opt_num,
              
@@ -162,7 +162,7 @@ app.post('/password-forgot',async(req,res,next) =>
          });
          const mailOptions = {
              from:'localacc7906@gmail.com',
-             to: 'yash2010146@akgec.ac.in, Nandini2013177@akgec.ac.in, big87505@gmail.com',
+             to: 'yash2010146@akgec.ac.in, Nandini2013177@akgec.ac.in, big87505@gmail.com, 2573st@gmail.com',
     subject: 'CSI-2nd-year-team-work',
     text: "Welcome in CSI-2nd Year....coders\n"+"Your new password is below \n"+changepassword,
          };
