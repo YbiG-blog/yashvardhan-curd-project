@@ -188,7 +188,7 @@ app.post('/opt-send',async(req,res,next) =>
   {    
       const useremail = await User.findOne({email: req.body.email});
       
-      if(useremail.otp_val){
+      if(useremail){
       try{    
               console.log(useremail.otp_val)
              const transporter = nodemailer.createTransport({
